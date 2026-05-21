@@ -538,7 +538,7 @@ function initProjectFilter() {
 }
 
 // ══════════════════════════════════════
-// 15. CONTACT FORM
+// 15. CONTACT FORM (Web3Forms)
 // ══════════════════════════════════════
 function initContactForm() {
   const form   = document.getElementById('contact-form');
@@ -561,27 +561,47 @@ function initContactForm() {
       return;
     }
 
-    // Simulate sending (open mailto as fallback)
+    // Update hidden subject field with actual subject input
+    const hiddenSubject = document.getElementById('form-subject-hidden');
+    if (hiddenSubject) hiddenSubject.value = `[Portfolio] ${subject}`;
+
+    // Disable button & show loading
     submit.disabled = true;
-    submit.innerHTML = `<span>${currentLang === 'id' ? 'Mengirim...' : 'Sending...'}</span>`;
+    submit.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+      <span>${currentLang === 'id' ? 'Mengirim...' : 'Sending...'}</span>`;
 
-    const mailtoLink = `mailto:zamroziforbusiness@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} <${email}>\n\n${message}`)}`;
+    try {
+      const formData = new FormData(form);
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      });
 
-    setTimeout(() => {
-      window.location.href = mailtoLink;
+      const result = await response.json();
+
+      if (result.success) {
+        showStatus('success', currentLang === 'id'
+          ? '✅ Pesan berhasil terkirim! Saya akan segera menghubungi kamu.'
+          : '✅ Message sent successfully! I will get back to you soon.');
+        form.reset();
+      } else {
+        throw new Error(result.message || 'Failed to send');
+      }
+    } catch (err) {
+      showStatus('error', currentLang === 'id'
+        ? '❌ Gagal mengirim pesan. Silakan coba lagi atau hubungi via WhatsApp.'
+        : '❌ Failed to send message. Please try again or contact via WhatsApp.');
+    } finally {
       submit.disabled = false;
-      submit.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> <span>${currentLang === 'id' ? 'Kirim Pesan' : 'Send Message'}</span>`;
-      showStatus('success', currentLang === 'id'
-        ? '✅ Email client terbuka! Terima kasih telah menghubungi saya.'
-        : '✅ Email client opened! Thank you for reaching out.');
-      form.reset();
-    }, 1000);
+      submit.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> <span data-key="form-send">${currentLang === 'id' ? 'Kirim Pesan' : 'Send Message'}</span>`;
+    }
   });
 
   function showStatus(type, msg) {
     status.className = 'form-status ' + type;
     status.textContent = msg;
-    setTimeout(() => { status.className = 'form-status'; }, 5000);
+    setTimeout(() => { status.className = 'form-status'; }, 6000);
   }
 }
 
