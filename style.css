@@ -1308,44 +1308,96 @@ button { border: none; background: none; cursor: pointer; font-family: inherit; 
 @media (max-width: 768px) {
   :root { --section-padding: 70px 0; }
 
-  .nav-links {
-    position: fixed; top: 70px; left: 0; right: 0;
-    background: var(--bg-nav);
-    backdrop-filter: blur(20px);
-    flex-direction: column; gap: 0;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border-metal);
-    transform: translateY(-110%);
-    transition: transform var(--t-mid);
-    z-index: 999;
+  /* ── NAVBAR MOBILE ── */
+  .nav-container {
+    padding: 0 1rem;
+    height: 64px;
   }
-  .nav-links.open { transform: translateY(0); }
-  .nav-link { padding: 0.9rem 2rem; width: 100%; border-radius: 0; }
+
+  /* Sembunyikan nav links, tampilkan sebagai panel dari atas */
+  .nav-links {
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 0 1rem;
+    transform: translateY(-110%);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    z-index: 998;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .nav-link {
+    padding: 0.85rem 1.5rem;
+    width: 100%;
+    border-radius: 0;
+    font-size: 1rem;
+    border-left: 3px solid transparent;
+    transition: all var(--t-fast);
+  }
+  .nav-link:hover,
+  .nav-link.active {
+    border-left-color: var(--red-accent);
+    background: var(--red-glow-sm);
+    color: var(--text-primary);
+  }
   .nav-link::after { display: none; }
+
+  /* Hamburger tampil */
   .hamburger { display: flex; }
 
+  /* Nav controls — lebih kompak */
+  .nav-controls { gap: 0.4rem; }
+
+  .control-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .lang-divider { display: none; }
+  .lang-en { display: none; }
+  [data-lang="en"] .lang-id { display: none; }
+  [data-lang="en"] .lang-en { display: inline; }
+
+  /* ── HERO ── */
   .hero-stats { gap: 1rem; }
   .stat-num { font-size: 1.8rem; }
+  .hero-social { gap: 0.5rem; }
+  .social-link { width: 38px; height: 38px; }
 
+  /* ── ABOUT ── */
   .about-info-grid { grid-template-columns: 1fr; }
 
+  /* ── CONTACT ── */
   .form-row { grid-template-columns: 1fr; }
 
+  /* ── TIMELINE ── */
   .timeline { padding-left: 1.5rem; }
   .timeline-item { padding-left: 1.5rem; }
-
   .timeline-header { flex-direction: column; }
   .timeline-meta { text-align: left; }
 
+  /* ── GENERAL ── */
   .section-title { font-size: 2rem; }
 }
 
 @media (max-width: 480px) {
-  .nav-container { padding: 0 1rem; }
+  .nav-container { padding: 0 0.75rem; height: 60px; }
+  .nav-logo { font-size: 1.3rem; }
+  .nav-links { top: 60px; }
+
+  /* Sembunyikan label teks tombol kontrol, tampilkan ikon saja */
+  .control-btn { padding: 0.3rem 0.45rem; }
+  .lang-divider { display: none; }
+
   .container { padding: 0 1rem; }
   .hero-content { padding: 1rem; }
-  .hero-name { font-size: 2.8rem; }
-  .hero-buttons { flex-direction: column; align-items: center; }
-  .about-image-badge { bottom: -15px; right: -10px; }
   #scroll-top { bottom: 1rem; right: 1rem; }
 }
